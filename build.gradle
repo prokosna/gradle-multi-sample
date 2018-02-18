@@ -1,0 +1,61 @@
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext {
+        springBootVersion = '1.5.10.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile group: 'com.github.scribejava', name: 'scribejava-apis', version: '5.2.0-java7again'
+        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+    }
+}
+
+
+project(':common') {
+    jar {
+        manifest {
+            attributes 'Main-Class': 'Sample'
+        }
+    }
+}
+
+project(':consumer') {
+    apply plugin: 'org.springframework.boot'
+    dependencies {
+        compile project(':common')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        testCompile('org.springframework.boot:spring-boot-starter-test')
+    }
+}
+
+project(':lambda') {
+    apply plugin: 'com.github.johnrengelman.shadow'
+    jar {
+        manifest{
+            attributes 'Main-Class': 'com.example.lambda.App'
+        }
+    }
+    dependencies {
+        compile project(':common')
+    }
+}
